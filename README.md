@@ -5,7 +5,7 @@ simple tools for POSIX systems
 
 # bin2hex
 bin2hex takes binary data from stdin and outputs it as hexadecimal digits to stdout.
-The digits are written in pairs seperated by either a space or a newline. The program takes an optional numeric argument which sets the number of pairs of hexadecimal numbers to put on each row. The default value is 26 because this is the most that will fit in 80 columns.
+The digits are written in pairs seperated by either a space or a newline. The program takes an optional numeric argument which sets the number of pairs of hexadecimal numbers to put on each row. The default value is 26 because that fits neatly in 80 columns.
 
 <br />
 
