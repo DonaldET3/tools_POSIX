@@ -23,4 +23,4 @@ Accepts a byte count and a filename as command line arguments. The filename can 
 <br />
 
 ## merge
-Accepts a filename from the command line. The filename must contain hash symbols where the file number is. The merged file is written to stdout.
+Accepts a filename from the command line. The filename can contain hash symbols where the file number is. The merged file is written to stdout.
