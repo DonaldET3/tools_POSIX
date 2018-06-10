@@ -19,3 +19,8 @@ The hexadecimal digits can be pairs of digits seperated by whitespace (such as a
 
 ## break
 Accepts a byte count and a filename as command line arguments. The filename can contain hash symbols where a number will be substituted. The file to be broken is input through stdin.
+
+<br />
+
+## merge
+Accepts a filename from the command line. The filename must contain hash symbols where the file number is. The merged file is written to stdout.
