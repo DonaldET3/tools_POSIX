@@ -10,7 +10,7 @@
 int main(int argc, char **argv)
 {
  int c;
- unsigned i, dc = 0, fnum = 0, limit = 0;
+ unsigned i, dc = 0, fnum = 1, limit = 0;
  char a[128], z[128], fname[256], fmt[32], *sp;
  FILE *fp;
 
