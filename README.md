@@ -30,9 +30,25 @@ o: output file
 _______
 
 ## break
-Accepts a byte count and a filename as command line arguments. The filename can contain hash symbols where a number will be substituted. The file to be broken is input through stdin.
+Breaks a file into pieces of a specified size.
+
+### options
+h: help  
+f: specify file to break (default: standard input)  
+s: maximum size of each output file (required)  
+u: unit scale (K, M, G, T, or P)  
+a: first part of output file names  
+d: minimum number of digits in the file number  
+z: last part of output file names  
 
 _______
 
 ## merge
-Accepts a filename from the command line. The filename can contain hash symbols where the file number is. The merged file is written to stdout.
+Merges many files into one.
+
+### options
+h: help
+f: specify output file name (default: standard output)  
+a: first part of input file names  
+d: minimum number of digits in the file number  
+z: last part of input file names  
