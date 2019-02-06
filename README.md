@@ -2,6 +2,8 @@
 
 **These programs are in the middle of an update process.**
 
+_______
+
 ## bin2hex
 bin2hex takes binary data from either standard input or a specified file and outputs it as hexadecimal digits to either standard output or a specified file.
 
@@ -13,6 +15,8 @@ w: bytes per line
 i: input file  
 o: output file  
 
+_______
+
 ## hex2bin
 hex2bin takes hexadecimal digits from either standard input or a specified file and outputs it as binary data to either standard output or a specified file.
 
@@ -23,8 +27,12 @@ h: help
 i: input file  
 o: output file  
 
+_______
+
 ## break
 Accepts a byte count and a filename as command line arguments. The filename can contain hash symbols where a number will be substituted. The file to be broken is input through stdin.
+
+_______
 
 ## merge
 Accepts a filename from the command line. The filename can contain hash symbols where the file number is. The merged file is written to stdout.
