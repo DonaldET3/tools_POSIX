@@ -47,7 +47,7 @@ _______
 Merges many files into one.
 
 ### options
-h: help
+h: help  
 f: specify output file name (default: standard output)  
 a: first part of input file names  
 d: minimum number of digits in the file number  
