@@ -35,7 +35,7 @@ Breaks a file into pieces of a specified size.
 ### options
 h: help  
 f: specify file to break (default: standard input)  
-s: maximum size of each output file (required)  
+s: maximum size of each output file  
 u: unit scale (K, M, G, T, or P)  
 a: first part of output file names  
 d: minimum number of digits in the file number  
