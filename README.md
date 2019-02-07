@@ -1,7 +1,5 @@
 # tools for Unix systems
 
-**These programs are in the middle of an update process.**
-
 _______
 
 ## bin2hex
