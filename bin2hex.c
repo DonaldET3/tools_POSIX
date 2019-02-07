@@ -131,35 +131,43 @@ int main(int argc, char **argv)
    case '?': exit(EXIT_FAILURE);
   }
 
+ /* check input values */
  if(w < 1)
   fail("\"w\" must be greater than zero");
 
+ /* open input file */
  if(inn != NULL)
   if((inf = fopen(inn, "rb")) == NULL)
    error("open input file");
 
+ /* open output file */
  if(outn != NULL)
   if((outf = fopen(outn, "wb")) == NULL)
    error("open output file");
 
+ /* convert the bytes */
  while(conv_byte(inf, outf))
  {
   i++;
 
   if(i < w)
   {
+   /* insert spaces between the digit pairs */
    if(putc(' ', outf) == EOF) error("write space");
   }
   else
   {
+   /* put a newline after every "w" digit pairs */
    if(putc('\n', outf) == EOF) error("write newline");
    i = 0;
   }
  }
 
+ /* close input file */
  if(inn != NULL)
   fclose(inf);
 
+ /* close output file */
  if(outn != NULL)
   fclose(outf);
 
