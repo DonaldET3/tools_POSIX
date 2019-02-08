@@ -50,3 +50,20 @@ f: specify output file name (default: standard output)
 a: first part of input file names  
 d: minimum number of digits in the file number  
 z: last part of input file names  
+
+_______
+
+## stow
+Takes data from either standard input or a specified file and outputs it to standard output or a specified file in a format that allows the data to be retrieved from media without an end-of-file indicator. If the program is in retrieve mode, then the operation is reversed.
+
+### options
+h: help  
+i: input file  
+o: output file  
+b: block size  
+r: retrieve (reverse)  
+
+### file format
+data block length word  
+data  
+if last word was not zero, another data block length word  
