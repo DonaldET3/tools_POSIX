@@ -10,6 +10,9 @@
 #include <stdio.h>
 /* getc()
  * putc()
+ * fputs()
+ * fprintf()
+ * sscanf()
  * perror()
  * fopen()
  * fclose()
@@ -20,6 +23,8 @@
 
 #include <stdlib.h>
 /* exit()
+ * malloc()
+ * free()
  * NULL
  * EXIT_FAILURE
  * EXIT_SUCCESS
