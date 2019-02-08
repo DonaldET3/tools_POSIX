@@ -105,44 +105,54 @@ unsigned read_word(FILE *fp)
  return x;
 }
 
+/* stow data */
 void stow(FILE *inf, FILE *outf, unsigned bs)
 {
  int c = 0;
  unsigned i, level;
  uint8_t *buf;
 
+ /* allocate buffer */
  buf = malloc(bs);
 
  while(c != EOF)
  {
+  /* fill buffer */
   for(level = 0; level < bs; level++)
   {
    if((c = getc(inf)) == EOF) break;
    buf[level] = c;
   }
 
+  /* amount of data in this block */
   write_word(level, outf);
 
+  /* write buffer */
   for(i = 0; i < level; i++)
    if(fputc(buf[i], outf) == EOF)
     error("failed to write byte");
  }
 
+ /* terminator */
  write_word(0, outf);
 
+ /* free buffer */
  free(buf);
 
  return;
 }
 
+/* retrieve data */
 void retrieve(FILE *inf, FILE *outf)
 {
  int c;
  unsigned i;
 
+ /* read blocks */
  while(i = read_word(inf))
   while(i--)
   {
+   /* read data byte, write data byte */
    if((c = getc(inf)) == EOF) fail("failed to read byte");
    if(putc(c, outf) == EOF) fail("failed to write byte");
   }
