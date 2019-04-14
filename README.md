@@ -17,28 +17,16 @@ The data is read from standard input and written to standard output.
 _______
 
 ## break
-Breaks a file into pieces of a specified size.
+breaks a file into pieces of a specified size
 
 ### options
 h: help  
-f: specify file to break (default: standard input)  
-s: maximum size of each output file  
+s: maximum size of broken output files  
 u: unit scale (K, M, G, T, or P)  
-a: first part of output file names  
+a: first part of broken file names  
 d: minimum number of digits in the file number  
-z: last part of output file names  
-
-_______
-
-## merge
-Merges many files into one.
-
-### options
-h: help  
-f: specify output file name (default: standard output)  
-a: first part of input file names  
-d: minimum number of digits in the file number  
-z: last part of input file names  
+z: last part of broken file names  
+r: reconstruct  
 
 _______
 
