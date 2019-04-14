@@ -8,9 +8,9 @@ hexadecimal converter; converts binary data to and from hexadecimal digits
 Digits are written in pairs seperated by either a space or a newline. The program takes an optional numeric argument which sets the number of bytes (pairs of digits) to put on each line. The default value is 26 because that fits neatly in 80 character columns.
 
 ### options
-h: help
-x: generate binary file from hexadecimal input
-w: bytes per line (default: 26)
+h: help  
+x: generate binary file from hexadecimal input  
+w: bytes per line (default: 26)  
 
 The data is read from standard input and written to standard output.
 
