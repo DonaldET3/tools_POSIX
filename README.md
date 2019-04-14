@@ -2,28 +2,17 @@
 
 _______
 
-## bin2hex
-bin2hex takes binary data from either standard input or a specified file and outputs it as hexadecimal digits to either standard output or a specified file.
+## hexc
+hexadecimal converter; converts binary data to and from hexadecimal digits
 
-The digits are written in pairs seperated by either a space or a newline. The program takes an optional numeric argument which sets the number of bytes (pairs of digits) to put on each line. The default value is 26 because that fits neatly in 80 columns.
-
-### options
-h: help  
-w: bytes per line  
-i: input file  
-o: output file  
-
-_______
-
-## hex2bin
-hex2bin takes hexadecimal digits from either standard input or a specified file and outputs it as binary data to either standard output or a specified file.
-
-The hexadecimal digits can be pairs of digits seperated by whitespace (such as a space or a newline) or simply a string of digits with no seperators. Other formats may work but those are the only two formats supported.
+Digits are written in pairs seperated by either a space or a newline. The program takes an optional numeric argument which sets the number of bytes (pairs of digits) to put on each line. The default value is 26 because that fits neatly in 80 character columns.
 
 ### options
-h: help  
-i: input file  
-o: output file  
+h: help
+x: generate binary file from hexadecimal input
+w: bytes per line (default: 26)
+
+The data is read from standard input and written to standard output.
 
 _______
 
