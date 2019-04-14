@@ -22,8 +22,8 @@
  * fopen()
  * fclose()
  * NULL
+ * FILE
  * EOF
- * FILENAME_MAX
  */
 
 #include <stdlib.h>
