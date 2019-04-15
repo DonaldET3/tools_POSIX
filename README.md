@@ -68,6 +68,19 @@ copy the state, shift it down by one less than half of the bit width, and XOR th
 
 _______
 
+## list
+make a list of file names
+
+A list of files and directories are entered into the command line, then the program writes a list of file paths to standard output separated by newline characters. With the appropriate options, the program can output just regular files, just directories, or both.
+
+### options
+h: help  
+f: output regular file paths  
+d: output directory paths  
+s: prepend file size in bytes to each file name  
+
+_______
+
 ## stow
 Takes data from either standard input or a specified file and outputs it to standard output or a specified file in a format that allows the data to be retrieved from media without an end-of-file indicator. If the program is in retrieve mode, then the operation is reversed.
 
