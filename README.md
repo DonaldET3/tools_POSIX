@@ -82,16 +82,27 @@ s: prepend file size in bytes to each file name
 _______
 
 ## stow
-Takes data from either standard input or a specified file and outputs it to standard output or a specified file in a format that allows the data to be retrieved from media without an end-of-file indicator. If the program is in retrieve mode, then the operation is reversed.
+This program converts data into a format that allows it to be retrieved from a device. Input is received from standard input and sent to standard output.
 
 ### options
 h: help  
-i: input file  
-o: output file  
-b: block size  
-r: retrieve (reverse)  
+b: buffer size  
+r: retreive mode  
 
-### file format
-data block length word  
-data  
-if last word was not zero, another data block length word  
+### stowage file format
+file header  
+data segments  
+
+#### file header
+null-terminated magic string "ODS1"  
+version number  
+
+#### data segment
+segment length (2B)  
+if length is not zero, segment data  
+
+#### header byte format
+Each header byte is written as three bytes to provide some error correction ability.  
+The first byte is simply the data byte.  
+In the second byte, the four most significant bits are inverted.  
+In the third byte, the four least significant bits are inverted.  
