@@ -148,6 +148,7 @@ void generate(uintmax_t output_size)
    failed("output data");
 
  free(string);
+ free(data);
 
  return;
 }
