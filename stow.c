@@ -1,22 +1,21 @@
 /* Opal file stower
- * 16-bit
  * for Unix
- * version 1
+ * version 2
  */
 
 
 /* pieces section */
 
+#include <errno.h>
+/* errno
+ */
+
 #include <stdio.h>
-/* getc()
- * putc()
+/* getchar()
+ * putchar()
  * fputs()
  * fprintf()
  * sscanf()
- * perror()
- * fopen()
- * fclose()
- * FILE
  * NULL
  * EOF
  */
@@ -30,14 +29,16 @@
  * EXIT_SUCCESS
  */
 
+#include <string.h>
+/* strerror_l()
+ */
+
 #include <stdint.h>
 /* uint8_t
  */
 
-#include <stdbool.h>
-/* bool
- * true
- * false
+#include <locale.h>
+/* uselocale()
  */
 
 #include <unistd.h>
@@ -45,34 +46,31 @@
  */
 
 
+/* definitions section */
+
+/* "ODS1" */
+uint8_t magic[] = {0x4F, 0x44, 0x53, 0x31, 0x00};
+
+
 /* functions section */
 
-/* help message */
-void help()
-{
- char *message = "Opal file stower\n"
- "version 1, 16-bit\n\n"
- "options\n"
- "h: print help and exit\n"
- "i: specify input file (default: standard input)\n"
- "o: specify output file (default: standard output)\n"
- "b: block and buffer size (default: 65535 bytes) (not used in retrieve mode)\n"
- "r: retrieve (reverse)\n";
- fputs(message, stderr);
-}
-
-/* library error */
-void error(char *message)
-{
- perror(message);
- exit(EXIT_FAILURE);
-}
-
-/* internal failure */
+/* print error message and quit */
 void fail(char *message)
 {
- fprintf(stderr, "%s\n", message);
+ /* print error message */
+ fputs(message, stderr);
+ /* elaborate on the error if possible */
+ if(errno) fprintf(stderr, ": %s", strerror_l(errno, uselocale((locale_t)0)));
+ putc('\n', stderr);
  exit(EXIT_FAILURE);
+}
+
+/* "failed to" <error message> and quit */
+void failed(char *message)
+{
+ /* prepend "failed to" to the error message */
+ fputs("failed to ", stderr);
+ fail(message);
 }
 
 /* invalid command line argument */
@@ -82,79 +80,149 @@ void invalid(char c)
  exit(EXIT_FAILURE);
 }
 
-/* write big-endian 16-bit word */
-void write_word(unsigned x, FILE *fp)
+/* help message */
+void help()
 {
- if(putc(0xFF & (x >> 8), fp) == EOF) error("failed to write word");
- if(putc(0xFF & x, fp) == EOF) error("failed to write word");
+ char message[] = "Opal file stower\n"
+ "version 2\n\n"
+ "options\n"
+ "h: print help and exit\n"
+ "b: buffer size (default: 65535 bytes) (not used in retrieve mode)\n"
+ "r: retrieve (reverse)\n\n"
+ "Input is received from standard input and sent to standard output.\n";
+ fputs(message, stderr);
+ return;
+}
+
+/* write verifiable byte */
+void vw_byte(int x)
+{
+ if(putchar(x &= 0xFF) == EOF) failed("write first verifiable byte");
+ if(putchar(x ^ 0xF0) == EOF) failed("write second verifiable byte");
+ if(putchar(x ^ 0x0F) == EOF) failed("write third verifiable byte");
+ return;
+}
+
+/* verify read byte */
+int vr_byte()
+{
+ int x, y, z;
+
+ if((x = getchar()) == EOF) failed("read first verifiable byte");
+ if((y = getchar()) == EOF) failed("read second verifiable byte");
+ if((z = getchar()) == EOF) failed("read third verifiable byte");
+
+ y ^= 0xF0; z ^= 0x0F;
+
+ if((x != y) || (x != z) || (y != z)) fputs("error found\n", stderr);
+
+ if((x == y) || (x == z)) return x;
+ if(y == z) return y;
+
+ failed("correct byte");
+}
+
+/* write two byte number */
+void vw_word(unsigned int x)
+{
+ vw_byte((int)((x >> 8) & 0xFF));
+ vw_byte((int)(x & 0xFF));
+ return;
+}
+
+/* read two byte number */
+unsigned int vr_word()
+{
+ unsigned int x;
+
+ x = vr_byte() << 8;
+
+ return x | vr_byte();
+}
+
+/* write header */
+void w_header()
+{
+ int i;
+
+ /* magic string */
+ for(i = 0; i < 5; i++) vw_byte(magic[i]);
+
+ /* version number */
+ vw_byte(1);
 
  return;
 }
 
-/* read big-endian 16-bit word */
-unsigned read_word(FILE *fp)
+/* read header */
+void r_header()
 {
- int c;
- unsigned x = 0;
+ int i;
 
- if((c = getc(fp)) == EOF) error("failed to read word");
- x = ((unsigned)c) << 8;
- if((c = getc(fp)) == EOF) error("failed to read word");
- x |= c;
+ /* magic string */
+ for(i = 0; i < 5; i++)
+  if(vr_byte() != magic[i])
+   fail("unrecognized file type");
 
- return x;
+ /* version number */
+ if(vr_byte() != 1) fail("incompatible file version");
+
+ return;
 }
 
 /* stow data */
-void stow(FILE *inf, FILE *outf, unsigned bs)
+void stow(unsigned int buf_siz)
 {
- int c = 0;
- unsigned i, level;
- uint8_t *buf;
+ int byte;
+ unsigned int level, index;
+ uint8_t *buffer;
 
- /* allocate buffer */
- buf = malloc(bs);
+ if((buffer = malloc(buf_siz)) == NULL) failed("allocate buffer");
 
- while(c != EOF)
+ /* write header */
+ w_header();
+
+ do
  {
-  /* fill buffer */
-  for(level = 0; level < bs; level++)
+  /* load buffer */
+  for(level = 0; level < buf_siz; level++)
   {
-   if((c = getc(inf)) == EOF) break;
-   buf[level] = c;
+   if((byte = getchar()) == EOF) break;
+   buffer[level] = byte;
   }
 
-  /* amount of data in this block */
-  write_word(level, outf);
+  /* write block header */
+  vw_word(level);
 
-  /* write buffer */
-  for(i = 0; i < level; i++)
-   if(fputc(buf[i], outf) == EOF)
-    error("failed to write byte");
- }
+  /* write block data */
+  for(index = 0; index < level; index++)
+   if(putchar(buffer[index]) == EOF)
+    failed("write block");
+ } while(byte != EOF);
 
- /* terminator */
- write_word(0, outf);
+ /* append file terminator */
+ if(level != 0) vw_word(0);
 
- /* free buffer */
- free(buf);
+ free(buffer);
 
  return;
 }
 
 /* retrieve data */
-void retrieve(FILE *inf, FILE *outf)
+void retrieve()
 {
- int c;
- unsigned i;
+ int byte;
+ unsigned int index, blk_siz;
 
- /* read blocks */
- while(i = read_word(inf))
-  while(i--)
+ /* read header */
+ r_header();
+
+ /* process blocks */
+ while(blk_siz = vr_word())
+  for(index = 0; index < blk_siz; index++)
   {
-   /* read data byte, write data byte */
-   if((c = getc(inf)) == EOF) fail("failed to read byte");
-   if(putc(c, outf) == EOF) fail("failed to write byte");
+   if((byte = getchar()) == EOF) failed("read block");
+   if(putchar(byte) == EOF) failed("write data");
   }
 
  return;
@@ -162,53 +230,32 @@ void retrieve(FILE *inf, FILE *outf)
 
 int main(int argc, char **argv)
 {
- int c, direction = 1;
- unsigned bs = 0xFFFF;
- char *inn, *outn;
- FILE *inf, *outf;
+ int c;
+ signed int direction = 1;
+ unsigned int buf_siz = 0xFFFF;
  extern char *optarg;
  extern int opterr, optind, optopt;
 
- inn = NULL; outn = NULL;
- inf = stdin; outf = stdout;
+ /* the errno symbol is defined in errno.h */
+ errno = 0;
 
- /* parse the command line */
- while((c = getopt(argc, argv, "hi:o:b:r")) != -1)
+ /* parse command line */
+ while((c = getopt(argc, argv, "hb:r")) != -1)
   switch(c)
   {
    case 'h': help(); exit(EXIT_SUCCESS);
-   case 'i': inn = optarg; break;
-   case 'o': outn = optarg; break;
-   case 'b': if(sscanf(optarg, "%u", &bs) != 1) invalid(c); break;
+   case 'b': if(sscanf(optarg, "%u", &buf_siz) != 1) invalid(c); break;
    case 'r': direction = -1; break;
    case '?': exit(EXIT_FAILURE);
   }
 
  /* check input values */
- if(bs < 1) fail("\"b\" must be greater than zero");
- if(bs > 0xFFFF) fail("\"b\" must be less than 65536");
-
- /* open input file */
- if(inn != NULL)
-  if((inf = fopen(inn, "rb")) == NULL)
-   error("open input file");
-
- /* open output file */
- if(outn != NULL)
-  if((outf = fopen(outn, "wb")) == NULL)
-   error("open output file");
+ if(buf_siz < 1) fail("\"b\" must be greater than zero");
+ if(buf_siz > 0xFFFF) fail("\"b\" must be less than 65536");
 
  /* process stream */
- if(direction == 1) stow(inf, outf, bs);
- else if(direction == -1) retrieve(inf, outf);
-
- /* close input file */
- if(inn != NULL)
-  fclose(inf);
-
- /* close output file */
- if(outn != NULL)
-  fclose(outf);
+ if(direction == 1) stow(buf_siz);
+ else if(direction == -1) retrieve();
 
  return EXIT_SUCCESS;
 }
