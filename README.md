@@ -106,3 +106,12 @@ Each header byte is written as three bytes to provide some error correction abil
 The first byte is simply the data byte.  
 In the second byte, the four most significant bits are inverted.  
 In the third byte, the four least significant bits are inverted.  
+
+_______
+
+## parity
+make a parity file for a list of files
+
+### options
+h: help  
+s: maximum number of bytes to output  
