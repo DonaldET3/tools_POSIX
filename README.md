@@ -31,7 +31,7 @@ r: reconstruct
 _______
 
 ## oh1
-data hasher
+"Opal Hash 1" data hasher
 
 By default, the program computes a hash from a stream of input data from standard input.
 
