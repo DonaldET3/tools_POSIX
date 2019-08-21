@@ -30,44 +30,6 @@ r: reconstruct
 
 _______
 
-## oh1
-"Opal Hash 1" data hasher
-
-By default, the program computes a hash from a stream of input data from standard input.
-
-In list mode, the program interprets standard input as a list of file names seperated by newline characters and outputs the hash of each file followed by a space, the file name, and a newline.
-
-In check mode, the program reads a stream that was previously output by the program in list mode and outputs each file name followed by either ": OK" or ": FAILED" depending on whether the hash matches.
-
-### options
-h: print help and exit  
-l: list mode  
-c: check mode  
-
-### hash computation
-The hash bit length must be divisible by two.  
-The input stream is cut into blocks with the first bit in the most significant position. The input blocks are exactly half of the hash length. If the stream needs to be lengthened to fit the last block, a single set bit is appended, follwed by as many clear bits as necessary to fill the block.
-
-Initialize the hash state to zero.
-
-For each input block...  
-add the input block into the hash  
-do three mixing rounds  
-
-### round function
-increment the hash  
-multiply the hash by the largest Fermat prime that fits in the hash state  
-copy the state, shift it down by one less than half of the bit width, and XOR that into the state  
-
-### Fermat primes (decimal and hexadecimal)
-3, 3  
-5, 5  
-17, 11  
-257, 101  
-65537, 10001  
-
-_______
-
 ## list
 make a list of file names
 
