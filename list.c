@@ -1,6 +1,6 @@
 /* Opal List
  * for Unix
- * version 1
+ * version 1.1
  */
 
 
@@ -11,27 +11,27 @@
  */
 
 #include <stdio.h>
-/* getc()
+/* size_t
+ * NULL
+ * EOF
+ * getc()
  * putc()
  * fputs()
  * printf()
  * fprintf()
  * sprintf()
  * perror()
- * NULL
- * EOF
- * size_t
  */
 
 #include <stdlib.h>
-/* exit()
- * malloc()
- * realloc()
- * free()
+/* size_t
  * NULL
  * EXIT_FAILURE
  * EXIT_SUCCESS
- * size_t
+ * exit()
+ * malloc()
+ * realloc()
+ * free()
  */
 
 #include <string.h>
@@ -41,6 +41,10 @@
  * strerror_l()
  */
 
+#include <stdint.h>
+/* uintmax_t
+ */
+
 #include <stdbool.h>
 /* bool
  * true
@@ -48,11 +52,11 @@
  */
 
 #include <dirent.h>
-/* opendir()
+/* DIR
+ * struct dirent
+ * opendir()
  * readdir()
  * closedir()
- * DIR
- * struct dirent
  */
 
 #include <locale.h>
@@ -64,10 +68,10 @@
  */
 
 #include <sys/stat.h>
-/* stat()
+/* struct stat
+ * stat()
  * S_ISREG()
  * S_ISDIR()
- * struct stat
  */
 
 
@@ -96,7 +100,7 @@ void fail(char *message)
  /* print error message */
  fputs(message, stderr);
  /* elaborate on the error if possible */
- if(errno) fprintf(stderr, ": %s", strerror_l(errno, uselocale((locale_t)0)));
+ if(errno) fprintf(stderr, ": %s", strerror_l(errno, uselocale(0)));
  putc('\n', stderr);
  exit(EXIT_FAILURE);
 }
@@ -113,7 +117,7 @@ void failed(char *message)
 void help()
 {
  char message[] = "Opal List\n"
- "version 1\n\n"
+ "version 1.1\n\n"
  "options\n"
  "h: print help and exit\n"
  "f: list regular file paths\n"
@@ -149,7 +153,9 @@ void proc_dir(char *origin, struct write_type *write)
  {perror(origin); return;}
 
  /* write starting directory */
- if(write->dir) printf("%s\n", origin);
+ if(write->dir)
+  if(strcmp(origin, "."))
+   printf("%s\n", origin);
 
  /* add first directory record */
  if((l_dir = c_dir = malloc(sizeof(struct dir_rec))) == NULL) failed("allocate first directory record");
@@ -186,7 +192,8 @@ void proc_dir(char *origin, struct write_type *write)
      failed("allocate file path");
 
    /* put together path */
-   sprintf(f_path, "%s/%s", c_dir->path, dir_e->d_name);
+   if(strcmp(c_dir->path, ".")) sprintf(f_path, "%s/%s", c_dir->path, dir_e->d_name);
+   else strcpy(f_path, dir_e->d_name);
 
    /* get file metadata */
    if(stat(f_path, &fsmd) == -1)
@@ -195,7 +202,7 @@ void proc_dir(char *origin, struct write_type *write)
    /* if regular file */
    if(S_ISREG(fsmd.st_mode))
    {
-    if(write->size) printf("%llu %s\n", (unsigned long long int)fsmd.st_size, f_path);
+    if(write->size) printf("%ju %s\n", (uintmax_t)fsmd.st_size, f_path);
     else if(write->file) printf("%s\n", f_path);
    }
    /* if directory */
@@ -245,7 +252,7 @@ void make_list(char **fnames, int ind, struct write_type *write)
   /* if regular file */
   if(S_ISREG(fsmd.st_mode))
   {
-   if(write->size) printf("%llu %s\n", (unsigned long long int)fsmd.st_size, fnames[ind]);
+   if(write->size) printf("%ju %s\n", (uintmax_t)fsmd.st_size, fnames[ind]);
    else if(write->file) printf("%s\n", fnames[ind]);
   }
   /* if directory */
